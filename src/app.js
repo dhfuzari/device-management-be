@@ -2,8 +2,10 @@ const express = require("express");
 const app = express();
 
 const deviceRoute = require("./routes/devices");
+const categoryRoute = require("./routes/categories");
 
 app.use("/devices", deviceRoute);
+app.use("/categories", categoryRoute);
 
 app.use((req, res, next) => {
   const error = new Error("Resource not found");
