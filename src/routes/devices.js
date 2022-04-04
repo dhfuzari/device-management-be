@@ -14,8 +14,14 @@ router.get("/:deviceId", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
+  const newDevice = {
+    categoryId: req.body.categoryId,
+    color: req.body.color,
+    partNumber: req.body.partNumber,
+  };
   res.status(201).send({
-    message: "creat a device",
+    message: "create a device",
+    data: newDevice,
   });
 });
 

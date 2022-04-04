@@ -14,8 +14,12 @@ router.get("/:categoryId", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
+  const newCategory = {
+    name: req.body.name,
+  };
   res.status(201).send({
     message: "creat a category",
+    data: newCategory,
   });
 });
 

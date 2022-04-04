@@ -1,8 +1,12 @@
 const express = require("express");
 const app = express();
+const bodyParser = require("body-parser");
 
 const deviceRoute = require("./routes/devices");
 const categoryRoute = require("./routes/categories");
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.use("/devices", deviceRoute);
 app.use("/categories", categoryRoute);
