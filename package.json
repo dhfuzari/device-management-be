@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/dhfuzari/device-management/issues"
   },
-  "homepage": "https://github.com/dhfuzari/device-management#readme"
+  "homepage": "https://github.com/dhfuzari/device-management#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
 }
