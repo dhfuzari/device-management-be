@@ -7,15 +7,25 @@ router.get("/", (req, res, next) => {
     if (error) {
       return res.status(500).send({ error: error.message });
     }
-    conn.query("SELECT * FROM devices", (error, result, field) => {
-      conn.release();
-      if (error) {
-        return res.status(500).send({ error: error.message });
+    conn.query(
+      `SELECT 
+        devices.id,  
+        devices.color, 
+        devices.partNumber, 
+        categories.name as category
+      FROM devices
+      INNER JOIN categories
+      ON devices.categories_id = categories.id;`,
+      (error, result, field) => {
+        conn.release();
+        if (error) {
+          return res.status(500).send({ error: error.message });
+        }
+        res.status(200).send({
+          data: result,
+        });
       }
-      res.status(200).send({
-        data: result,
-      });
-    });
+    );
   });
 });
 
