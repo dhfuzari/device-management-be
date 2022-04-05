@@ -70,12 +70,6 @@ router.post("/", (req, res, next) => {
   });
 });
 
-router.put("/:deviceId", (req, res, next) => {
-  res.status(200).send({
-    message: "complete device update",
-  });
-});
-
 router.patch("/:deviceId", (req, res, next) => {
   mySql.getConnection((error, conn) => {
     if (error) {
@@ -103,8 +97,23 @@ router.patch("/:deviceId", (req, res, next) => {
 });
 
 router.delete("/:deviceId", (req, res, next) => {
-  res.status(200).send({
-    message: "delete device",
+  mySql.getConnection((error, conn) => {
+    if (error) {
+      return res.status(500).send({ error: error.message });
+    }
+    conn.query(
+      "DELETE FROM devices WHERE id = ?",
+      [req.params.deviceId],
+      (error, result, field) => {
+        conn.release();
+        if (error) {
+          return res.status(500).send({ error: error.message });
+        }
+        res.status(202).send({
+          message: "Device successfully removed",
+        });
+      }
+    );
   });
 });
 
