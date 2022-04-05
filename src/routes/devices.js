@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const mySql = require("../mysql").pool;
 
 router.get("/", (req, res, next) => {
   res.status(200).send({
@@ -19,9 +20,24 @@ router.post("/", (req, res, next) => {
     color: req.body.color,
     partNumber: req.body.partNumber,
   };
-  res.status(201).send({
-    message: "create a device",
-    data: newDevice,
+
+  mySql.getConnection((error, conn) => {
+    conn.query(
+      "INSERT INTO devices(color, partNumber, categories_id) VALUES(?, ?, ?)",
+      [req.body.color, req.body.partNumber, req.body.categories_id],
+      (error, result, field) => {
+        conn.release();
+        if (error) {
+          return res.status(500).send({
+            error: error.message,
+          });
+        }
+        res.status(201).send({
+          message: "Device created",
+          id: result.insertId,
+        });
+      }
+    );
   });
 });
 
