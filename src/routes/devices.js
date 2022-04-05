@@ -3,8 +3,19 @@ const router = express.Router();
 const mySql = require("../mysql").pool;
 
 router.get("/", (req, res, next) => {
-  res.status(200).send({
-    message: "get all devices",
+  mySql.getConnection((error, conn) => {
+    if (error) {
+      return res.status(500).send({ error: error.message });
+    }
+    conn.query("SELECT * FROM devices", (error, result, field) => {
+      conn.release();
+      if (error) {
+        return res.status(500).send({ error: error.message });
+      }
+      res.status(200).send({
+        data: result,
+      });
+    });
   });
 });
 
@@ -22,19 +33,22 @@ router.post("/", (req, res, next) => {
   };
 
   mySql.getConnection((error, conn) => {
+    if (error) {
+      return res.status(500).send({ error: error.message });
+    }
     conn.query(
       "INSERT INTO devices(color, partNumber, categories_id) VALUES(?, ?, ?)",
       [req.body.color, req.body.partNumber, req.body.categories_id],
       (error, result, field) => {
         conn.release();
         if (error) {
-          return res.status(500).send({
-            error: error.message,
-          });
+          return res.status(500).send({ error: error.message });
         }
         res.status(201).send({
           message: "Device created",
-          id: result.insertId,
+          data: {
+            id: result.insertId,
+          },
         });
       }
     );
