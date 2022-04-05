@@ -1,9 +1,30 @@
 const express = require("express");
 const app = express();
+const bodyParser = require("body-parser");
 
 const deviceRoute = require("./routes/devices");
+const categoryRoute = require("./routes/categories");
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // TODO: Set the production front-end server
+  res.header(
+    "Access-Control-Allow-Header",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+    return res.status(200).send({});
+  }
+
+  next();
+});
 
 app.use("/devices", deviceRoute);
+app.use("/categories", categoryRoute);
 
 app.use((req, res, next) => {
   const error = new Error("Resource not found");
