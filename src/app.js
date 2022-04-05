@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 
+const healthCheckRoute = require("./routes/healthCheck");
 const deviceRoute = require("./routes/devices");
 const categoryRoute = require("./routes/categories");
 
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/", healthCheckRoute);
 app.use("/devices", deviceRoute);
 app.use("/categories", categoryRoute);
 
