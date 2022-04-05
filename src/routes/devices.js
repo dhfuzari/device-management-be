@@ -77,8 +77,28 @@ router.put("/:deviceId", (req, res, next) => {
 });
 
 router.patch("/:deviceId", (req, res, next) => {
-  res.status(200).send({
-    message: "partial device update",
+  mySql.getConnection((error, conn) => {
+    if (error) {
+      return res.status(500).send({ error: error.message });
+    }
+    conn.query(
+      "UPDATE devices SET color = ?, partNumber = ?, categories_id = ? WHERE id = ?",
+      [
+        req.body.color,
+        req.body.partNumber,
+        req.body.categories_id,
+        req.params.deviceId,
+      ],
+      (error, result, field) => {
+        conn.release();
+        if (error) {
+          return res.status(500).send({ error: error.message });
+        }
+        res.status(202).send({
+          message: "Device successfully updated",
+        });
+      }
+    );
   });
 });
 
