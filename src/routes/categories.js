@@ -1,43 +1,114 @@
 const express = require("express");
 const router = express.Router();
+const mySql = require("../mysql").pool;
 
 router.get("/", (req, res, next) => {
-  res.status(200).send({
-    message: "get all categories",
+  mySql.getConnection((error, conn) => {
+    if (error) {
+      return res.status(500).send({ error: error.message });
+    }
+    conn.query("SELECT * FROM categories", (error, result, field) => {
+      conn.release();
+      if (error) {
+        return res.status(500).send({ error: error.message });
+      }
+      res.status(200).send({
+        data: result,
+      });
+    });
   });
 });
 
 router.get("/:categoryId", (req, res, next) => {
-  res.status(200).send({
-    message: "get a category by id",
+  mySql.getConnection((error, conn) => {
+    if (error) {
+      return res.status(500).send({ error: error.message });
+    }
+    conn.query(
+      "SELECT * FROM categories WHERE id = ?",
+      [req.params.categoryId],
+      (error, result, field) => {
+        conn.release();
+        if (error) {
+          return res.status(500).send({ error: error.message });
+        }
+        res.status(200).send({
+          data: result,
+        });
+      }
+    );
   });
 });
 
 router.post("/", (req, res, next) => {
-  const newCategory = {
-    name: req.body.name,
+  const newDevice = {
+    categoryId: req.body.categoryId,
+    color: req.body.color,
+    partNumber: req.body.partNumber,
   };
-  res.status(201).send({
-    message: "creat a category",
-    data: newCategory,
-  });
-});
 
-router.put("/:categoryId", (req, res, next) => {
-  res.status(200).send({
-    message: "complete category update",
+  mySql.getConnection((error, conn) => {
+    if (error) {
+      return res.status(500).send({ error: error.message });
+    }
+    conn.query(
+      "INSERT INTO categories(name) VALUES(?)",
+      [req.body.name],
+      (error, result, field) => {
+        conn.release();
+        if (error) {
+          return res.status(500).send({ error: error.message });
+        }
+        res.status(201).send({
+          message: "Category created",
+          data: {
+            id: result.insertId,
+          },
+        });
+      }
+    );
   });
 });
 
 router.patch("/:categoryId", (req, res, next) => {
-  res.status(200).send({
-    message: "partial category update",
+  mySql.getConnection((error, conn) => {
+    if (error) {
+      return res.status(500).send({ error: error.message });
+    }
+    conn.query(
+      "UPDATE categories SET name = ? WHERE id = ?",
+      [req.body.name, req.params.categoryId],
+      (error, result, field) => {
+        conn.release();
+        if (error) {
+          return res.status(500).send({ error: error.message });
+        }
+        res.status(202).send({
+          message: "Category successfully updated",
+        });
+      }
+    );
   });
 });
 
 router.delete("/:categoryId", (req, res, next) => {
-  res.status(200).send({
-    message: "delete category",
+  mySql.getConnection((error, conn) => {
+    if (error) {
+      return res.status(500).send({ error: error.message });
+    }
+    conn.query(
+      "DELETE FROM categories WHERE id = ?",
+      [req.params.categoryId],
+      (error, result, field) => {
+        conn.release();
+        if (error) {
+          return res.status(500).send({ error: error.message });
+        }
+        res.status(202).send({
+          message: "Category successfully removed",
+        });
+      }
+    );
   });
 });
 
