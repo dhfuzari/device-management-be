@@ -1,5 +1,5 @@
 {
-  "name": "device-management",
+  "name": "device-management-be",
   "version": "1.0.0",
   "description": "A simple device management web app",
   "main": "index.js",
