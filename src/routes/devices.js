@@ -20,8 +20,23 @@ router.get("/", (req, res, next) => {
 });
 
 router.get("/:deviceId", (req, res, next) => {
-  res.status(200).send({
-    message: "get a device by id",
+  mySql.getConnection((error, conn) => {
+    if (error) {
+      return res.status(500).send({ error: error.message });
+    }
+    conn.query(
+      "SELECT * FROM devices WHERE id = ?",
+      [req.params.deviceId],
+      (error, result, field) => {
+        conn.release();
+        if (error) {
+          return res.status(500).send({ error: error.message });
+        }
+        res.status(200).send({
+          data: result,
+        });
+      }
+    );
   });
 });
 
