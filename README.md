@@ -9,7 +9,6 @@ A NodeJS and Express Api to create, retrieve, update and delete devices and cate
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/dhfuzari/device-management-be)
 ![GitHub issues](https://img.shields.io/github/issues/dhfuzari/device-management-be)
-![GitHub](https://img.shields.io/github/license/dhfuzari/device-management-be)
 
 ## Tech and frameworks used
 
