@@ -7,9 +7,6 @@
 
 A NodeJS and Express Api to create, retrieve, update and delete devices and categories entities. In the next sections, you'll be guided through a step by step explanation of how to have a local development environment. But, if you prefer, the api endpoints are available through this [public url](https://device-management-be.herokuapp.com).
 
-![GitHub last commit](https://img.shields.io/github/last-commit/dhfuzari/device-management-be)
-![GitHub issues](https://img.shields.io/github/issues/dhfuzari/device-management-be)
-
 ## Tech and frameworks used
 
 - [Docker](https://docker.com/)
