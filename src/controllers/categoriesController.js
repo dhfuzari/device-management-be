@@ -1,111 +1,96 @@
-const mySql = require("../mysql").pool;
+const mySql = require("../mysql");
 
-exports.getCategories = (req, res, next) => {
-  mySql.getConnection((error, conn) => {
-    if (error) {
-      return res.status(500).send({ error: error.message });
-    }
-    conn.query("SELECT * FROM categories", (error, result, field) => {
-      conn.release();
-      if (error) {
-        return res.status(500).send({ error: error.message });
-      }
-      res.status(200).send({
-        data: result,
-      });
+exports.getCategories = async (req, res, next) => {
+  try {
+    const result = await mySql.execute("SELECT * FROM categories");
+    return res.status(200).send({
+      data: result,
     });
-  });
+  } catch (error) {
+    return res.status(500).send({ error });
+  }
 };
 
-exports.getCategoriesById = (req, res, next) => {
-  mySql.getConnection((error, conn) => {
-    if (error) {
-      return res.status(500).send({ error: error.message });
-    }
-    conn.query(
+exports.getCategoriesById = async (req, res, next) => {
+  try {
+    const query = "SELECT * FROM categories WHERE id = ?";
+    const result = await mySql.execute(query, [req.params.categoryId]);
+    return res.status(200).send({
+      data: result,
+    });
+  } catch (error) {
+    return res.status(500).send({ error });
+  }
+};
+
+exports.createCategory = async (req, res, next) => {
+  try {
+    const query = "INSERT INTO categories(name) VALUES(?)";
+    const result = await mySql.execute(query, [req.body.name]);
+    return res.status(201).send({
+      message: "Category created",
+      data: {
+        id: result.insertId,
+      },
+    });
+  } catch (error) {
+    return res.status(500).send({ error });
+  }
+};
+
+exports.updateCategory = async (req, res, next) => {
+  try {
+    const currentCategory = await mySql.execute(
       "SELECT * FROM categories WHERE id = ?",
-      [req.params.categoryId],
-      (error, result, field) => {
-        conn.release();
-        if (error) {
-          return res.status(500).send({ error: error.message });
-        }
-        res.status(200).send({
-          data: result,
-        });
-      }
+      [req.params.categoryId]
     );
-  });
+    if (currentCategory.length === 0) {
+      return res.status(404).send({
+        message: "Category not found",
+      });
+    } else {
+      const query = "UPDATE categories SET name = ? WHERE id = ?";
+      const result = await mySql.execute(query, [
+        req.body.name,
+        req.params.categoryId,
+      ]);
+      return res.status(202).send({
+        message: "Category successfully updated",
+      });
+    }
+  } catch (error) {
+    return res.status(500).send({ error });
+  }
 };
 
-exports.createCategory = (req, res, next) => {
-  const newDevice = {
-    categoryId: req.body.categoryId,
-    color: req.body.color,
-    partNumber: req.body.partNumber,
-  };
-
-  mySql.getConnection((error, conn) => {
-    if (error) {
-      return res.status(500).send({ error: error.message });
-    }
-    conn.query(
-      "INSERT INTO categories(name) VALUES(?)",
-      [req.body.name],
-      (error, result, field) => {
-        conn.release();
-        if (error) {
-          return res.status(500).send({ error: error.message });
-        }
-        res.status(201).send({
-          message: "Category created",
-          data: {
-            id: result.insertId,
-          },
-        });
-      }
+exports.removeCategory = async (req, res, next) => {
+  try {
+    const currentCategory = await mySql.execute(
+      "SELECT * FROM categories WHERE id = ?",
+      [req.params.categoryId]
     );
-  });
-};
-
-exports.updateCategory = (req, res, next) => {
-  mySql.getConnection((error, conn) => {
-    if (error) {
-      return res.status(500).send({ error: error.message });
+    if (currentCategory.length === 0) {
+      return res.status(404).send({
+        message: "Category not found",
+      });
     }
-    conn.query(
-      "UPDATE categories SET name = ? WHERE id = ?",
-      [req.body.name, req.params.categoryId],
-      (error, result, field) => {
-        conn.release();
-        if (error) {
-          return res.status(500).send({ error: error.message });
-        }
-        res.status(202).send({
-          message: "Category successfully updated",
-        });
-      }
-    );
-  });
-};
 
-exports.removeCategory = (req, res, next) => {
-  mySql.getConnection((error, conn) => {
-    if (error) {
-      return res.status(500).send({ error: error.message });
-    }
-    conn.query(
-      "DELETE FROM categories WHERE id = ?",
-      [req.params.categoryId],
-      (error, result, field) => {
-        conn.release();
-        if (error) {
-          return res.status(500).send({ error: error.message });
-        }
-        res.status(202).send({
-          message: "Category successfully removed",
-        });
-      }
+    const deviceCategory = await mySql.execute(
+      "SELECT * FROM devices WHERE categories_id = ?",
+      [req.params.categoryId]
     );
-  });
+    if (deviceCategory.length >= 1) {
+      return res.status(404).send({
+        message: "You can't remove this category. There are devices using it",
+      });
+    }
+
+    const query = "DELETE FROM categories WHERE id = ?";
+    const result = await mySql.execute(query, [req.params.categoryId]);
+    res.status(202).send({
+      message: "Category successfully removed",
+    });
+  } catch (error) {
+    return res.status(500).send({ error });
+  }
 };
