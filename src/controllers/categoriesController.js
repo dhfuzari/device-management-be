@@ -80,7 +80,7 @@ exports.removeCategory = async (req, res, next) => {
       [req.params.categoryId]
     );
     if (deviceCategory.length >= 1) {
-      return res.status(404).send({
+      return res.status(409).send({
         message: "You can't remove this category. There are devices using it",
       });
     }
