@@ -16,7 +16,7 @@ exports.getCategoriesById = async (req, res, next) => {
     const query = "SELECT * FROM categories WHERE id = ?";
     const result = await mySql.execute(query, [req.params.categoryId]);
     return res.status(200).send({
-      data: result,
+      data: result[0] || {},
     });
   } catch (error) {
     return res.status(500).send({ error });
