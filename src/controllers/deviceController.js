@@ -52,9 +52,11 @@ exports.createDevice = async (req, res, next) => {
         req.body.categories_id,
       ]);
       return res.status(201).send({
-        message: "Device created",
         data: {
           id: result.insertId,
+          partNumber: req.body.partNumber,
+          color: req.body.color,
+          categories_id: req.body.categories_id,
         },
       });
     }

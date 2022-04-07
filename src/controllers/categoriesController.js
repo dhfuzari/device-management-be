@@ -28,9 +28,9 @@ exports.createCategory = async (req, res, next) => {
     const query = "INSERT INTO categories(name) VALUES(?)";
     const result = await mySql.execute(query, [req.body.name]);
     return res.status(201).send({
-      message: "Category created",
       data: {
         id: result.insertId,
+        name: req.body.name,
       },
     });
   } catch (error) {
