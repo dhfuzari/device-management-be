@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const healthCheckRoute = require("./routes/healthCheck");
 const deviceRoute = require("./routes/devices");
@@ -8,6 +9,13 @@ const categoryRoute = require("./routes/categories");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
+  })
+);
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*"); // TODO: Set the production front-end server
